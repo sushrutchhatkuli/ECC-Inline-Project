@@ -1,0 +1,60 @@
+==========================================================================
+Hsiao SEC-DED (72,64) golden model verification
+==========================================================================
+
+1. Parity-check matrix properties (Hsiao's rules)
+  [PASS] H1: every column nonzero
+  [PASS] H2: every column odd weight
+  [PASS] H3: every column distinct
+  [PASS] => d_min >= 4 (SEC-DED capable)
+  [PASS] d_min <= 4 (weight-4 codeword exists)  (columns (0, 64, 1, 2))
+  [PASS] systematic: check columns form I_r
+  [PASS] minimum total weight achieved (208 data + 8 identity = 216)  (actual 216)
+  [PASS] row weights perfectly balanced  (all rows weight 27)
+  [PASS] column weight histogram is optimal {1:8, 3:56, 5:8}  ({1: 8, 3: 56, 5: 8})
+
+2. Syndrome implementation cross-check (column-wise vs row-wise)
+  [PASS] column-wise == row-wise on 202 words
+
+3. Error-free encode/decode
+  [PASS] valid codeword gives syndrome == 0
+  [PASS] data survives round trip
+  [PASS] no flags raised on clean data
+  [PASS] round trip for all 64 one-hot data words
+
+4. Syndrome independence from data (S = H.e, not H.r)
+  [PASS] all 72 single-bit errors give the same syndrome for every data word
+
+5. Single-bit errors: EXHAUSTIVE (all 72 positions x 16 data words)
+  [PASS] corrected 1152/1152 single-bit errors  (100%)
+  [PASS] every single-error syndrome is a distinct H column
+
+6. Double-bit errors: EXHAUSTIVE (all C(72,2)=2556 pairs x 16 data words)
+  [PASS] flagged 40896/40896 double-bit errors as uncorrectable  (100%)
+  [PASS] zero double-bit errors silently miscorrected
+  [PASS] every 2-bit syndrome is nonzero and even-weight
+  [PASS] no 2-bit syndrome collides with any H column (no aliasing)
+
+7. Triple-bit errors: EXHAUSTIVE over all C(72,3)=59640 patterns
+  [PASS] 0 of 59640 triple-bit errors are silently undetected  (guaranteed by odd column weight)
+  [INFO] triple-bit outcome split: 26072 flagged UE (43.72%), 33568 miscorrected (56.28%), 0 silent (0.00%)
+         Miscorrection beyond the guaranteed strength is EXPECTED for a
+         d_min=4 code -- t=1 correction, 2 detection. It is reported
+         here honestly rather than hidden; BCH in Phase 3 is the fix.
+
+8. Limits beyond guaranteed strength (the honest part)
+  [PASS] all odd-weight (5,7-bit) errors detected, 5000 trials  (odd weight => odd syndrome parity => nonzero. Holds for ALL odd sizes)
+  [PASS] weight-4 codeword count agrees between enumeration and algebra  (enumerated 8392, algebraic 8392)
+  [INFO] weight-4 errors: 8392 of 1028790 undetected (0.8157%) -- these ARE the weight-4
+         codewords. Unavoidable at d_min=4; it is the reason NAND-class
+         storage needs the multi-bit BCH decoder of Phase 3.
+  [PASS] uniform-random error escape rate matches 2^-8 = 0.3906%  (measured 0.3800% over 200000 trials)
+  [PASS] syndrome == 0 for 2000 random valid codewords (S=0 <=> codeword)
+
+==========================================================================
+RESULT: 26/26 checks passed
+  single-bit errors corrected : 1152/1152 (100% required)
+  double-bit errors detected  : 40896/40896 (100% required)
+  triple-bit silent escapes   : 0/59640 (0 required)
+==========================================================================
+GOLDEN MODEL VERIFICATION PASSED

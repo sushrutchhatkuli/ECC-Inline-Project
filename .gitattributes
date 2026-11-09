@@ -1,0 +1,28 @@
+# Normalise to LF in the repository. Without this, git's Windows autocrlf would
+# check out sim/run_xsim.sh with CRLF line endings, which bash refuses to run
+# ("bad interpreter: /usr/bin/env bash^M").
+* text=auto eol=lf
+
+# Shell scripts must be LF, always.
+*.sh text eol=lf
+
+# Source and generated text
+*.sv    text eol=lf
+*.svh   text eol=lf
+*.v     text eol=lf
+*.py    text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.log   text eol=lf
+*.tcl   text eol=lf
+*.xdc   text eol=lf
+
+# Windows-native scripts, if any are added later, want CRLF.
+*.bat   text eol=crlf
+*.ps1   text eol=crlf
+
+# Never touch binaries
+*.png   binary
+*.pdf   binary
+*.wdb   binary
+*.vcd   binary

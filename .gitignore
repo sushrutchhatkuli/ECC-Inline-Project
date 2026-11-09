@@ -1,0 +1,38 @@
+# --- simulation / synthesis build output ---
+sim/work/
+sim/**/xsim.dir/
+*.wdb
+*.vcd
+*.jou
+*.pb
+*.str
+*.log
+
+# Recorded per-phase evidence under docs/results/ IS tracked -- the whole point
+# is that the numbers in the report are reproducible and auditable.
+!docs/results/*.log
+
+# --- Vivado project scratch (Phase 2 onward) ---
+.Xil/
+vivado*.jou
+vivado*.log
+vivado*.str
+*.cache/
+*.hw/
+*.ip_user_files/
+*.runs/
+*.sim/
+*.gen/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- editors / OS ---
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+*~

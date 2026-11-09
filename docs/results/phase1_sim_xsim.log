@@ -1,0 +1,53 @@
+
+****** xsim v2025.1 (64-bit)
+  **** SW Build 6140274 on Thu May 22 00:12:29 MDT 2025
+  **** IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
+  **** SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
+  **** Start of session at: Mon Nov  9 00:26:40 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_secded_sim/xsim_script.tcl
+# xsim {tb_secded_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+======================================================================
+tb_secded -- Hsiao SEC-DED (72,64) self-checking testbench
+======================================================================
+
+1. Golden-model vector replay (secded_vectors.txt)
+    3221 vectors replayed, 0 mismatches
+
+2. Error-free encode/decode round trip
+    80 clean words, 0 mismatches
+
+3. Single-bit errors: EXHAUSTIVE (all 72 positions x 16 data words)
+    corrected 1152/1152  (100.00%)
+
+4. Double-bit errors: EXHAUSTIVE (all 2556 pairs x 16 data words)
+    flagged uncorrectable 40896/40896  (miscorrected 0, silent 0)
+
+5. Triple-bit errors: EXHAUSTIVE (all 59640 patterns)
+    detected 59640/59640 (0 silent required)
+    split: 26072 flagged UE, 33568 miscorrected, 0 silent
+    NOTE miscorrection of 3-bit errors is EXPECTED at d_min=4
+         (guarantee is correct-1/detect-2). Silent escapes must
+         be zero, and are, because every H column has odd weight.
+
+6. Syndrome depends only on the error (S = H.e, not H.r)
+    72 positions x 16 data words, 0 mismatches
+
+======================================================================
+SUMMARY
+  vector replay        : 3221 run, 0 mismatch
+  clean round trip     : 80 run, 0 mismatch
+  single-bit corrected : 1152 / 1152
+  double-bit flagged UE: 40896 / 40896
+  triple-bit detected  : 59640 / 59640  (silent: 0)
+  decoder invariants   : 106141 samples, 0 violations
+  total checks         : 106141
+======================================================================
+*** ALL TESTS PASSED ***
+$finish called at time : 110627 ns : File "C:/Users/sushr/DOCUME~1/INLINE~1/tb/tb_secded.sv" Line 434
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Nov  9 00:26:43 2026...
