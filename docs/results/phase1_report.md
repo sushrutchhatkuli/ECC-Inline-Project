@@ -57,9 +57,9 @@ Measured by `model/test_hsiao.py`, not asserted by hand.
 
 | metric | value | significance |
 |---|---|---|
-| H1 all columns nonzero | ✅ | every single flip is visible |
-| H2 all columns odd weight | ✅ | syndrome parity = error count mod 2 → DED for one XOR |
-| H3 all columns distinct | ✅ | a flip is unambiguously locatable; location vector one-hot by construction |
+| H1 all columns nonzero | yes | every single flip is visible |
+| H2 all columns odd weight | yes | syndrome parity = error count mod 2 → DED for one XOR |
+| H3 all columns distinct | yes | a flip is unambiguously locatable; location vector one-hot by construction |
 | column weight histogram | `{1:8, 3:56, 5:8}` | **provably minimum** total weight (see §4 of design notes) |
 | data-side weight | 208 | equals the proven lower bound `56·3 + 8·5` |
 | total H weight | 216 | 208 + 8 identity |
@@ -84,8 +84,8 @@ Measured by `model/test_hsiao.py`, not asserted by hand.
 
 Phase 1 acceptance criteria, from the project brief:
 
-- all single-bit errors corrected → **100%, exhaustive** ✅
-- double-bit errors detected → **100%, exhaustive (not representative — every pair)** ✅
+- all single-bit errors corrected → **100%, exhaustive** - PASS
+- double-bit errors detected → **100%, exhaustive (not representative — every pair)** - PASS
 
 ### Checks 3 and 4 verified per-position
 
@@ -162,14 +162,14 @@ as results:
 
 | tool | status | used for |
 |---|---|---|
-| Vivado 2025.1 (`C:\Xilinx\2025.1\Vivado`) | ✅ installed | XSim simulation now; Artix-7 synthesis in Phase 2 |
-| Artix-7 device data (`xc7a35t`, `xc7a100t`) | ✅ installed | Phase 2 target |
-| UVM 1.2 (`data/system_verilog/uvm_1.2`) | ✅ present | Phase 4 |
-| Python 3.12.10 | ✅ installed | golden model, generators |
-| git 2.x (Git Bash) | ✅ installed | version control, run scripts |
-| Icarus Verilog | ❌ not installed | optional: faster iteration than XSim |
-| Verilator | ❌ not installed | optional: fast sim + line/toggle coverage |
-| Yosys | ❌ not installed | optional: vendor-independent gate counts |
-| GTKWave | ❌ not installed | optional: VCD viewing (Vivado's own viewer works) |
+| Vivado 2025.1 (`C:\Xilinx\2025.1\Vivado`) | installed | XSim simulation now; Artix-7 synthesis in Phase 2 |
+| Artix-7 device data (`xc7a35t`, `xc7a100t`) | installed | Phase 2 target |
+| UVM 1.2 (`data/system_verilog/uvm_1.2`) | present | Phase 4 |
+| Python 3.12.10 | installed | golden model, generators |
+| git 2.x (Git Bash) | installed | version control, run scripts |
+| Icarus Verilog | not installed | optional: faster iteration than XSim |
+| Verilator | not installed | optional: fast sim + line/toggle coverage |
+| Yosys | not installed | optional: vendor-independent gate counts |
+| GTKWave | not installed | optional: VCD viewing (Vivado's own viewer works) |
 
 Nothing in the "not installed" list blocks Phases 1–4.

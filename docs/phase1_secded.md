@@ -143,11 +143,11 @@ free. Three rules on `H`:
 
 `d_min ≥ 4` means no set of 1, 2 or 3 columns XORs to zero.
 
-- *1 column:* nonzero by H1. ✔
-- *2 columns:* XOR to zero only if equal; excluded by H3. ✔
+- *1 column:* nonzero by H1.
+- *2 columns:* XOR to zero only if equal; excluded by H3.
 - *3 columns:* weight-mod-2 is a **linear functional** over GF(2), so
   `wt(a+b+c) mod 2 = (wt a + wt b + wt c) mod 2 = (1+1+1) mod 2 = 1`.
-  An odd-weight vector cannot be zero. ✔
+  An odd-weight vector cannot be zero.
 
 ∎
 
@@ -233,7 +233,7 @@ arithmetically possible, which is not obvious and worth checking:
   (fix a row, choose the other 2 positions from the remaining 7) — automatic,
   independent of ordering.
 - So the 8 weight-5 columns must supply `26 − 21 = 5` ones per row.
-  Check: `8 rows × 5 = 40 = 8 columns × 5 ones`. ✔ Consistent.
+  Check: `8 rows × 5 = 40 = 8 columns × 5 ones`. Consistent.
 
 An explicit construction exists. Let `T_i = {i, i+1, i+3} mod 8` for
 `i = 0…7`, and let column `C_i` be the **complement** of `T_i` (weight

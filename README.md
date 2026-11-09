@@ -30,7 +30,7 @@ this repo is ultimately about that distinction.
 
 | phase | architecture | status |
 |---|---|---|
-| **1** | **Hsiao SEC-DED (72,64)** — correct 1 bit, detect 2. DRAM-class. | ✅ **complete** |
+| **1** | **Hsiao SEC-DED (72,64)** — correct 1 bit, detect 2. DRAM-class. | **complete** |
 | 2 | AXI4-Lite slave wrapper: register map, error counters, UE interrupt. Artix-7 Fmax + area. | planned |
 | 3 | BCH multi-bit corrector — GF(2^m), syndromes, Berlekamp-Massey, Chien search. `t=2`, `t=4`. | planned |
 | 4 | UVM environment: constrained-random data and error injection, scoreboard, functional coverage, SVA. | planned |
