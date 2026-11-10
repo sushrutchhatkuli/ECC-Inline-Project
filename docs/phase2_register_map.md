@@ -1,12 +1,16 @@
-# Phase 2a — AXI4-Lite ECC controller: architecture and register map
+# Phase 2 — AXI4-Lite ECC controller: architecture and register map
 
-**Status:** specification. No RTL written yet.
+**Status:** 2a specification complete. 2b implemented and passing
+(`rtl/axil_slave.sv`, `rtl/ecc_axil_ctrl.sv`, `tb/tb_axil_regs.sv`:
+175 directed checks, 0 SVA violations -- log in
+[`results/phase2b_sim_xsim.log`](results/phase2b_sim_xsim.log)).
 
-This document is deliberately committed *before* any Phase 2 RTL. Every
-decision below is a decision that would otherwise get buried inside the code,
+Sections 1-7 were committed as Phase 2a *before* any Phase 2 RTL existed.
+Every decision in them is one that would otherwise get buried inside the code,
 and a register map is a contract: once software is written against it, changing
-it is expensive. Settling it first is how real IP is developed, and it means
-each later Phase 2 increment is small and reviewable.
+it is expensive. Settling it first is how real IP is developed, and it is why
+each Phase 2 increment since has been small and reviewable. Section 8 records
+what 2b actually built.
 
 ---
 
@@ -292,8 +296,8 @@ Committed separately, each verified before the next begins:
 
 | step | deliverable | verification |
 |---|---|---|
-| **2a** | this specification | review |
-| **2b** | AXI4-Lite slave: channels, handshakes, address decode, registers. No ECC yet. | protocol testbench: handshake rules, response codes, register read/write, reserved-space `SLVERR` |
+| **2a** | this specification | review -- **done** |
+| **2b** | AXI4-Lite slave: channels, handshakes, address decode, registers. No ECC yet. | protocol testbench: handshake rules, response codes, register read/write, reserved-space `SLVERR` -- **done, 175 checks / 0 SVA violations** |
 | **2c** | codeword RAM + ECC datapath: encode on write, decode on read, RMW for partial writes | self-checking TB against the Phase 1 golden model |
 | **2d** | counters, sticky status, `ERR_ADDR`/`ERR_SYND`, error injection | directed tests: inject 1 bit -> CE; inject 2 -> UE + `SLVERR` on RMW; saturation; clear |
 | **2e** | interrupt generation and `IRQ_EN`/`IRQ_STATUS` semantics | tests for level behaviour, masking, write-1-to-clear, and the handler race |
@@ -312,3 +316,64 @@ Committed separately, each verified before the next begins:
 - **Byte-granular ECC.** Protecting each byte separately would remove the RMW
   penalty but costs far more check bits and gives weaker protection per bit.
   The 64/8 granule is the DRAM-realistic choice.
+
+
+---
+
+## 8. Phase 2b notes
+
+Implemented in two modules rather than one, because the split pays for itself
+in 2c:
+
+- **`rtl/axil_slave.sv`** -- generic AXI4-Lite front end. Turns the five
+  channels into one `req_valid`/`req_done` request-response pair. `req_valid`
+  is held until the core answers, so the core may take any number of cycles.
+  That is precisely what 2c's 4-cycle read-modify-write needs, and nothing in
+  this module changes to allow it.
+- **`rtl/ecc_axil_ctrl.sv`** -- address decode and the full register file.
+
+### What is inert in 2b, and why that was the right call
+
+`ce_event` and `ue_event` are tied low: nothing can observe an error until the
+decoder is wired in. But the logic *around* them -- saturating counters,
+sticky status, `ERR_ADDR`/`ERR_SYND` capture, interrupt set/clear -- is built
+in full. 2c and 2d connect real events to existing logic instead of rewriting
+it. Synthesis will fold the counters to constants until then, so **2b's area
+figure is not the Phase 2 area figure.**
+
+The data window at `0x800`-`0xFFF` answers `SLVERR` for now. The testbench
+checks that explicitly and labels the expectation PROVISIONAL, so the gap is
+recorded rather than silent.
+
+### Two decisions worth defending
+
+**Writes to read-only registers return `OKAY`, not `SLVERR`.** Unmapped
+*addresses* are a software bug worth flagging, so those give `SLVERR`. A write
+that lands on a real register but hits read-only bits is an ordinary masked
+field write -- the usual convention is to ignore it silently, and returning an
+error there would break read-modify-write sequences in driver code that writes
+back a whole word.
+
+**Counters saturate rather than wrap.** A wrapped counter can read zero after
+a storm of errors, which is indistinguishable from a healthy part. Saturation
+is monotonic and cannot lie in that direction.
+
+### The testbench bug worth remembering
+
+The first run deadlocked on test 17 (concurrent read and write). The cause was
+in the **BFM**, not the design: it drove stimulus at the negedge and tested
+`ARREADY` at that same negedge, assuming `ARREADY` could not change before the
+posedge where the handshake is actually evaluated.
+
+That assumption is false here. This slave gives writes priority, so `ARREADY`
+combinationally depends on `AWVALID`/`WVALID` (legal -- READY may depend on
+VALID; only the reverse is forbidden). With a read and a write running
+concurrently, the write branch asserted `AWVALID` between the negedge and the
+posedge and pulled `ARREADY` back down. The read branch had already concluded
+its handshake succeeded, dropped `ARVALID`, and waited forever for a response.
+
+The fix: every DUT output the BFM makes a decision on is now sampled into a
+flop on the **posedge**, so the BFM evaluates exactly the value the DUT saw at
+the edge. A BFM may only test READY off-edge if READY cannot change before the
+clock edge -- and that is a property of the particular slave, not something a
+reusable BFM should ever assume.

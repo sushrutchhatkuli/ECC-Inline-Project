@@ -1,0 +1,64 @@
+
+****** xsim v2025.1 (64-bit)
+  **** SW Build 6140274 on Thu May 22 00:12:29 MDT 2025
+  **** IP Build 6138677 on Thu May 22 03:10:11 MDT 2025
+  **** SharedData Build 6139179 on Tue May 20 17:58:58 MDT 2025
+  **** Start of session at: Tue Nov 10 16:08:35 2026
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_axil_regs_sim/xsim_script.tcl
+# xsim {tb_axil_regs_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+======================================================================
+tb_axil_regs -- Phase 2b: AXI4-Lite slave + register file
+======================================================================
+
+ 1. Reset state
+
+ 2. ID register
+
+ 3. Register reset values
+
+ 4. CTRL read/write
+
+ 5. RW register read/write
+
+ 6. WSTRB byte-lane writes
+
+ 7. Read-only registers ignore writes (OKAY, no change)
+
+ 8. Reserved register offsets return SLVERR
+
+ 9. Reserved region 0x100-0x7FF returns SLVERR
+
+10. Data window 0x800-0xFFF returns SLVERR (PROVISIONAL)
+    Phase 2c implements the codeword RAM; this expectation
+    changes there. It is checked now so 2b has no silent gap.
+
+11. IRQ_STATUS write-1-to-clear
+
+12. CTRL.CLR_CNT
+
+13. Channel ordering: W before AW
+
+14. Channel ordering: AW before W
+
+15. Response back-pressure: BREADY held low
+
+16. Response back-pressure: RREADY held low
+
+17. Simultaneous read and write (write has priority)
+
+18. Back-to-back transactions
+
+======================================================================
+SUMMARY
+  directed checks : 175 run, 0 failed
+  SVA violations  : 0
+======================================================================
+*** ALL TESTS PASSED ***
+$finish called at time : 4175 ns : File "C:/Users/sushr/DOCUME~1/INLINE~1/tb/tb_axil_regs.sv" Line 565
+exit
+INFO: [Common 17-206] Exiting xsim at Tue Nov 10 16:08:37 2026...

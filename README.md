@@ -31,7 +31,7 @@ this repo is ultimately about that distinction.
 | phase | architecture | status |
 |---|---|---|
 | **1** | **Hsiao SEC-DED (72,64)** — correct 1 bit, detect 2. DRAM-class. | **complete** |
-| 2 | AXI4-Lite slave wrapper: register map, error counters, UE interrupt. Artix-7 Fmax + area. | in progress — [spec committed](docs/phase2_register_map.md) |
+| 2 | AXI4-Lite slave wrapper: register map, error counters, UE interrupt. Artix-7 Fmax + area. | in progress — [2a spec](docs/phase2_register_map.md) and 2b slave done |
 | 3 | BCH multi-bit corrector — GF(2^m), syndromes, Berlekamp-Massey, Chien search. `t=2`, `t=4`. | planned |
 | 4 | UVM environment: constrained-random data and error injection, scoreboard, functional coverage, SVA. | planned |
 | 5 | Characterisation: BER sweeps, latency, throughput, Fmax, correction-strength vs. area. | planned |
@@ -92,8 +92,11 @@ rtl/      synthesisable SystemVerilog
           ecc_hsiao_pkg.sv     parity-check matrix (GENERATED - do not hand-edit)
           secded_encoder.sv    combinational encoder
           secded_decoder.sv    combinational decoder: syndrome, locate, classify, correct
+          axil_slave.sv        generic AXI4-Lite front end -> request/response
+          ecc_axil_ctrl.sv     address decode + register file (ECC datapath in 2c)
 tb/       self-checking testbenches
           tb_secded.sv         golden-model replay + exhaustive error injection
+          tb_axil_regs.sv      AXI4-Lite protocol SVA + register directed tests
           vectors/             generated test vectors
 model/    Python golden reference - the source of truth
           hsiao.py             the code itself, with the theory in the docstring
@@ -141,13 +144,14 @@ python model/test_gen_rtl.py
 ```
 
 ```bash
-bash sim/run_xsim.sh
+bash sim/run_xsim.sh all
 ```
 
-Override the Vivado location if yours differs:
+Individual targets: `secded` for the Phase 1 core, `axil` for the Phase 2b bus
+interface. Override the Vivado location if yours differs:
 
 ```bash
-VIVADO_HOME=/c/Xilinx/2025.1/Vivado bash sim/run_xsim.sh
+VIVADO_HOME=/c/Xilinx/2025.1/Vivado bash sim/run_xsim.sh all
 ```
 
 ### One Windows gotcha
